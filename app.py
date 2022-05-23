@@ -35,6 +35,11 @@ class kolorujEntropie(kolor):
             return f
         r = krzywa(e-0.5) if e > 0.5 else 0
         b = e**2
+        print([
+            int(255*r),
+            0,
+            int(255*b)
+        ])
         return [
             int(255*r),
             0,
@@ -89,6 +94,8 @@ def entropia(data, blocksize, offset, symbols=256):
         p = i/float(blocksize)
         
         entropia += (p * math.log(p, base))
+    print(type(entropia))
+    print(entropia)
     return -entropia
 
 def footer_markdown():
