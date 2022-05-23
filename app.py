@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
 from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.resnet50 import preprocentropiaeness_input
+
 import math
 
 class kolor:
