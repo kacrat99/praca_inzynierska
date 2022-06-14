@@ -2,6 +2,7 @@ from tensorflow.python import keras
 import streamlit as st
 from PIL import Image, ImageDraw
 import tensorflow as tf
+import utils
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
@@ -69,7 +70,21 @@ class Hilbert:
 
     def point(self, idx):
         return hilbert_point(self.dimension, self.order, idx)
-
+def hilbert_point(dimension, order, h):
+    
+    hwidth = order*dimension
+    e, d = 0, 0
+    p = [0]*dimension
+    for i in range(order):
+        w = utils.bitrange(h, hwidth, i*dimension, i*dimension+dimension)
+        l = utils.graycode(w)
+        l = itransform(e, d, dimension, l)
+        for j in range(dimension):
+            b = utils.bitrange(l, dimension, j, j+1)
+            p[j] = utils.setbit(p[j], order, i, b)
+        e = e ^ utils.lrot(entry(w), d+1, dimension)
+        d = (d + direction(w, dimension) + 1)%dimension
+    return p
 def narysujMapeRozwinieta( size, csource, name):
     
     map = fs(2, size**2)
