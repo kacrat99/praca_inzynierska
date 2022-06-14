@@ -41,6 +41,35 @@ class kolorujEntropie(kolor):
             0,
             int(255*b)
         ]
+class Hilbert:
+    def __init__(self, dimension, order):
+        self.dimension, self.order = dimension, order
+
+    @classmethod
+    def fromSize(self, dimension, size):
+        
+        x = math.log(size, 2)
+        if not float(x)/dimension == int(x)/dimension:
+            raise ValueError("Size does not fit %s."%dimension)
+        return Hilbert(dimension, int(x/dimension))
+
+    def __len__(self):
+        return 2**(self.dimension*self.order)
+
+    def __getitem__(self, idx):
+        if idx >= len(self):
+            raise IndexError
+        return self.point(idx)
+
+    def dimensions(self):
+        
+        return [int(math.ceil(len(self)**(1/float(self.dimension))))]*self.dimension
+
+    def index(self, p):
+        return hilbert_index(self.dimension, self.order, p)
+
+    def point(self, idx):
+        return hilbert_point(self.dimension, self.order, idx)
 
 def narysujMapeRozwinieta( size, csource, name):
     
@@ -70,7 +99,7 @@ def narysujMapeRozwinieta( size, csource, name):
     
 
 def fs(dim,size):
-    return curve.Hilbert.fromSize(dim,size)
+    return Hilbert.fromSize(dim,size)
 
 
 def entropia(data, blocksize, offset, symbols=256):
