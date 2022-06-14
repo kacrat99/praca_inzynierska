@@ -7,8 +7,14 @@ W folderze modele_CNN zawarte są kody odpowiedzialne za trenowanie modeli użyt
 
 ## Jak uruchomić aplikacje?
 
-Należy użyć komendy w terminalu 
-'''
-streamlit run app.py
-'''
+Należy użyć komendy w terminalu ```streamlit run app.py```
+
+### Jak działa aplikacja? 
+
+Należy wrzucić plik aplikacji mobilnej z rozszerzeniem ```.apk``` a następnie poczekać na wiadomość zwrotną.
+Aplikacja po wrzuceniu przez użytkownika próbki zamieni plik na wizualizacje binarną wraz z entropią lokalną 
+Obraz zostanie przekazany do modelu ResNet50, który dokona predykcji. 
+Wiadomość o predykcji wyświetli się na ekranie aplikacji wraz z obrazem. 
+
+![alt text](https://github.com/kacrat99/praca_inzynierska/blob/master/sample1.PNG?raw=true)
 
