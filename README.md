@@ -7,5 +7,8 @@ W folderze modele_CNN zawarte są kody odpowiedzialne za trenowanie modeli użyt
 
 ## Jak uruchomić aplikacje?
 
-Należy użyć komendy w terminalu '''streamlit run app.py'''
+Należy użyć komendy w terminalu 
+'''
+streamlit run app.py
+'''
 
