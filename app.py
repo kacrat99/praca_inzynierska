@@ -70,6 +70,7 @@ class Hilbert:
 
     def point(self, idx):
         return hilbert_point(self.dimension, self.order, idx)
+
 def hilbert_point(dimension, order, h):
     
     hwidth = order*dimension
@@ -85,6 +86,37 @@ def hilbert_point(dimension, order, h):
         e = e ^ utils.lrot(entry(w), d+1, dimension)
         d = (d + direction(w, dimension) + 1)%dimension
     return p
+
+def transform(entry, direction, width, x):
+    assert x < 2**width
+    assert entry < 2**width
+    return utils.rrot((x^entry), direction+1, width)
+
+
+def itransform(entry, direction, width, x):
+    
+    assert x < 2**width
+    assert entry < 2**width
+    return utils.lrot(x, direction+1, width)^entry
+    
+
+
+def direction(x, n):
+    assert x < 2**n
+    if x == 0:
+        return 0
+    elif x%2 == 0:
+        return utils.tsb(x-1, n)%n
+    else:
+        return utils.tsb(x, n)%n
+
+
+def entry(x):
+    if x == 0:
+        return 0
+    else:
+        return utils.graycode(2*((x-1)/2))
+    
 def narysujMapeRozwinieta( size, csource, name):
     
     map = fs(2, size**2)
