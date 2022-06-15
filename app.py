@@ -2,13 +2,53 @@ from tensorflow.python import keras
 import streamlit as st
 from PIL import Image, ImageDraw
 import tensorflow as tf
-import utils
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
 from tensorflow.keras.preprocessing import image
 
 import math
+
+#Wyodrębnia zakres bitów jako liczbę całkowitą. 
+def br(x, width, start, end):
+    
+    return x >> (width-end) & ((2**(end-start))-1)
+
+def gc(x):
+    return int(x)^(int(x)>>1)
+
+#Ustawia bit i w liczbie całkowitej x o szerokości w na b.
+def sb(x, w, i, b):
+   
+    assert b in [1, 0]
+    assert i < w
+    if b:
+        return x | 2**(w-i-1)
+    else:
+        return x & ~2**(w-i-1)
+
+def lr(x, i, width):
+    
+    assert x < 2**width
+    i = i%width
+    x = (x<<i) | (x>>width-i)
+    return x&(2**width-1)
+
+def rr(x, i, width):
+    
+    assert x < 2**width
+    i = i%width
+    x = (x>>i) | (x<<width-i)
+    return x&(2**width-1)
+
+def tsb(x, width):
+    
+    assert x < 2**width
+    i = 0
+    while x&1 and i <= width:
+        x = x >> 1
+        i += 1
+    return i
 
 class kolor:
     def __init__(self, data):
@@ -25,6 +65,7 @@ class kolor:
             return self.block[2]
         else:
             return self.getPoint(x)
+
 class kolorujEntropie(kolor):
     def getPoint(self, x):
         e = entropia(self.data, 32, x, len(self.symbol_map))
@@ -65,8 +106,6 @@ class Hilbert:
         
         return [int(math.ceil(len(self)**(1/float(self.dimension))))]*self.dimension
 
-    def index(self, p):
-        return hilbert_index(self.dimension, self.order, p)
 
     def point(self, idx):
         return hilbert_point(self.dimension, self.order, idx)
@@ -77,27 +116,27 @@ def hilbert_point(dimension, order, h):
     e, d = 0, 0
     p = [0]*dimension
     for i in range(order):
-        w = utils.bitrange(h, hwidth, i*dimension, i*dimension+dimension)
-        l = utils.graycode(w)
+        w = br(h, hwidth, i*dimension, i*dimension+dimension)
+        l = gc(w)
         l = itransform(e, d, dimension, l)
         for j in range(dimension):
-            b = utils.bitrange(l, dimension, j, j+1)
-            p[j] = utils.setbit(p[j], order, i, b)
-        e = e ^ utils.lrot(entry(w), d+1, dimension)
+            b = br(l, dimension, j, j+1)
+            p[j] = sb(p[j], order, i, b)
+        e = e ^ lr(entry(w), d+1, dimension)
         d = (d + direction(w, dimension) + 1)%dimension
     return p
 
 def transform(entry, direction, width, x):
     assert x < 2**width
     assert entry < 2**width
-    return utils.rrot((x^entry), direction+1, width)
+    return rr((x^entry), direction+1, width)
 
 
 def itransform(entry, direction, width, x):
     
     assert x < 2**width
     assert entry < 2**width
-    return utils.lrot(x, direction+1, width)^entry
+    return lr(x, direction+1, width)^entry
     
 
 
@@ -106,16 +145,16 @@ def direction(x, n):
     if x == 0:
         return 0
     elif x%2 == 0:
-        return utils.tsb(x-1, n)%n
+        return tsb(x-1, n)%n
     else:
-        return utils.tsb(x, n)%n
+        return tsb(x, n)%n
 
 
 def entry(x):
     if x == 0:
         return 0
     else:
-        return utils.graycode(2*((x-1)/2))
+        return gc(2*((x-1)/2))
     
 def narysujMapeRozwinieta( size, csource, name):
     
@@ -263,9 +302,3 @@ if file is not None:
                 percent = predictions[-1][4]
             percent = answer = str(round(percent*100, 0))
             col2.markdown(f'<p style="font-family:Courier; color:White; font-size: 20px;text-align:center">file is {label} for {percent}% </p>',unsafe_allow_html=True)
-            
-
-    
-    
-    
-    
