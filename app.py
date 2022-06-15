@@ -27,6 +27,7 @@ def sb(x, w, i, b):
     else:
         return x & ~2**(w-i-1)
 
+#rotacja w lewo 
 def lr(x, i, width):
     
     assert x < 2**width
@@ -34,12 +35,14 @@ def lr(x, i, width):
     x = (x<<i) | (x>>width-i)
     return x&(2**width-1)
 
+#rotacja w prawo 
 def rr(x, i, width):
     
     assert x < 2**width
     i = i%width
     x = (x>>i) | (x<<width-i)
     return x&(2**width-1)
+
 
 def tsb(x, width):
     
@@ -108,9 +111,10 @@ class Hilbert:
 
 
     def point(self, idx):
-        return hilbert_point(self.dimension, self.order, idx)
+        return hp(self.dimension, self.order, idx)
 
-def hilbert_point(dimension, order, h):
+#zwraca punkt hilberta
+def hp(dimension, order, h):
     
     hwidth = order*dimension
     e, d = 0, 0
@@ -126,20 +130,12 @@ def hilbert_point(dimension, order, h):
         d = (d + direction(w, dimension) + 1)%dimension
     return p
 
-def transform(entry, direction, width, x):
-    assert x < 2**width
-    assert entry < 2**width
-    return rr((x^entry), direction+1, width)
-
-
 def itransform(entry, direction, width, x):
     
     assert x < 2**width
     assert entry < 2**width
     return lr(x, direction+1, width)^entry
     
-
-
 def direction(x, n):
     assert x < 2**n
     if x == 0:
@@ -148,7 +144,6 @@ def direction(x, n):
         return tsb(x-1, n)%n
     else:
         return tsb(x, n)%n
-
 
 def entry(x):
     if x == 0:
